@@ -25,6 +25,12 @@
                 </nav>
                 <div class="tab-content" id="nav-tabContent">
                     <div th:class="${activeTab == 'Files'} ? 'tab-pane fade show active' : 'tab-pane fade show'" id="nav-files" role="tabpanel" aria-labelledby="nav-files-tab">
+                        <div th:if="${uploadFileSuccess}" class="alert alert-success">
+                            You successfully uploaded a file!
+                        </div>
+                        <div th:if="${deleteFileSuccess}" class="alert alert-success">
+                            You successfully deleted a file!
+                        </div>
                         <div id="informDiv" th:if="${fileUploadErrMsg}">
                             <div class="alert alert-danger" th:text="${fileUploadErrMsg}"></div>
                         </div>
@@ -64,6 +70,15 @@
                         </div>
                     </div>
                     <div th:class="${activeTab == 'Notes'} ? 'tab-pane fade show active' : 'tab-pane fade'" id="nav-notes" role="tabpanel" aria-labelledby="nav-notes-tab">
+                        <div th:if="${addNoteSuccess}" class="alert alert-success">
+                            You successfully added a new note!
+                        </div>
+                        <div th:if="${editNoteSuccess}" class="alert alert-success">
+                            You successfully edited a note!
+                        </div>
+                        <div th:if="${deleteNoteSuccess}" class="alert alert-success">
+                            You successfully deleted a note!
+                        </div>
                         <button id="add-note-button" style="margin: 0.25em;" type="button" class="btn btn-info float-right" onclick="showNoteModal()">
                             + Add a New Note
                         </button>
@@ -123,6 +138,15 @@
                         </div>
                     </div>
                     <div th:class="${activeTab == 'Credentials'} ? 'tab-pane fade show active' : 'tab-pane fade'" id="nav-credentials" role="tabpanel" aria-labelledby="nav-credentials-tab">
+                        <div th:if="${addCredentialSuccess}" class="alert alert-success">
+                            You successfully added a new credential!
+                        </div>
+                        <div th:if="${editCredentialSuccess}" class="alert alert-success">
+                            You successfully edited a credential!
+                        </div>
+                        <div th:if="${deleteCredentialSuccess}" class="alert alert-success">
+                            You successfully deleted a credential!
+                        </div>
                         <button id="add-credential-button" style="margin: 0.25em;" type="button" class="btn btn-info float-right" onclick="showCredentialModal()">
                             + Add a New Credential
                         </button>

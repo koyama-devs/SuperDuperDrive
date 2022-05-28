@@ -46,12 +46,14 @@ public class FileController {
         }
 
         fileService.uploadFile(authentication, fileUpload);
+        redirectAttributes.addFlashAttribute("uploadFileSuccess", true);
         return "redirect:/";
     }
 
     @GetMapping("/delete-file/{fileName}")
-    public String deleteFile(@PathVariable String fileName) {
+    public String deleteFile(@PathVariable String fileName, RedirectAttributes redirectAttributes) {
         fileService.deleteFile(fileName);
+        redirectAttributes.addFlashAttribute("deleteFileSuccess", true);
         HomeController.activeTab = "Files";
         return "redirect:/";
     }

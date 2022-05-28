@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 public class NoteController {
@@ -21,20 +22,23 @@ public class NoteController {
     }
 
     @PostMapping("/save-changes-note")
-    public String saveChangesNote(@ModelAttribute("note") Note note, Authentication authentication){
+    public String saveChangesNote(@ModelAttribute("note") Note note, Authentication authentication, RedirectAttributes redirectAttributes){
         if(note.getNoteid() == null){
             note.setUserid(userService.getUser(authentication.getName()).getUserId());
             noteService.addNote(note);
+            redirectAttributes.addFlashAttribute("addNoteSuccess", true);
         } else {
             noteService.editNote(note);
+            redirectAttributes.addFlashAttribute("editNoteSuccess", true);
         }
         HomeController.activeTab = "Notes";
         return "redirect:/";
     }
 
     @GetMapping("/delete-note/{noteId}")
-    public String deleteNote(@PathVariable Integer noteId) {
+    public String deleteNote(@PathVariable Integer noteId, RedirectAttributes redirectAttributes) {
         noteService.deleteNote(noteId);
+        redirectAttributes.addFlashAttribute("deleteNoteSuccess", true);
         HomeController.activeTab = "Notes";
         return "redirect:/";
     }
