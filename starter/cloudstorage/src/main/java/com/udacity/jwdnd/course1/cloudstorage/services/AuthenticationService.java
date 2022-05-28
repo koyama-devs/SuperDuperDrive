@@ -43,8 +43,4 @@ public class AuthenticationService implements AuthenticationProvider {
     public boolean supports(Class<?> authentication) {
         return authentication.equals(UsernamePasswordAuthenticationToken.class);
     }
-
-    public Authentication getAuthentication(){
-        return SecurityContextHolder.getContext().getAuthentication();
-    }
 }
