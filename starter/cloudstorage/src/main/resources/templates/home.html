@@ -10,6 +10,12 @@
     </head>
     <body class="p-3 mb-2 bg-light text-black">
         <div class="container">
+            <div id="informDiv" th:if="${errorMessage}">
+                <div class="alert alert-danger" th:text="${errorMessage}"></div>
+            </div>
+            <div id="errorDiv" class="alert alert-danger" th:if="${errorMessageList}"} th:each="err : ${errorMessageList}" th:text="${err.value}">
+            </div>
+
             <div id="logoutDiv">
                 <form action="#" th:action="@{/logout}" method="GET">
                     <button type="submit" class="btn btn-secondary float-right">Logout</button>

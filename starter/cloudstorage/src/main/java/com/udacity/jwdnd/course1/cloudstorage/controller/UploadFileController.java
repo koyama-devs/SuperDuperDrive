@@ -8,8 +8,11 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 @RequestMapping("/")
@@ -38,8 +41,15 @@ public class UploadFileController {
     }
 
     @PostMapping("/")
-    public String storeFileUpload(@RequestParam("fileUpload") MultipartFile fileUpload){
+    public String storeFileUpload(@RequestParam("fileUpload") MultipartFile fileUpload, RedirectAttributes redirectAttributes){
+        if(fileService.isExistsFile(fileUpload.getOriginalFilename())){
+            redirectAttributes.addFlashAttribute("errorMessage", "Can not to upload two files with the same name!");
+            return "redirect:/?error";
+        }
+
+        fileService.clearAllErrors();
         fileService.storeFile(fileUpload);
+        redirectAttributes.addFlashAttribute("errorMessageList", fileService.getAllErrors());
         return "redirect:/";
     }
 

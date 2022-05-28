@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.FileSystemUtils;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
@@ -19,7 +20,10 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class FileService {
@@ -28,8 +32,14 @@ public class FileService {
 
     private AuthenticationService authenticationService;
 
+    private Map<String, String> allErrors;
+
     private final Path uploadLocation;
 
+    @PostConstruct
+    public void postConstructor(){
+        this.allErrors = new HashMap<>();
+    }
     public FileService(FileMapper fileMapper, UserService userService, AuthenticationService authenticationService, StorageProperties properties) {
         this.fileMapper = fileMapper;
         this.userService = userService;
@@ -41,11 +51,19 @@ public class FileService {
         return fileMapper.getAllFiles();
     }
 
-    public int addFileToDB(File file){
-        return fileMapper.insert(file);
+    public Map<String, String> getAllErrors() {
+        return allErrors;
     }
 
-    public void storeFile(MultipartFile file) {
+    public void addError(String errorCode, String errorMessage) {
+        allErrors.put(errorCode, errorMessage);
+    }
+
+    public void clearAllErrors(){
+        allErrors.clear();
+    }
+
+    public int addFileToDB(MultipartFile file){
         File newFile = new File(file.getOriginalFilename());
         newFile.setContenttype(file.getContentType());
 //        try {
@@ -55,24 +73,35 @@ public class FileService {
 //        }
         newFile.setFilesize(String.valueOf(file.getSize()));
         User user = userService.getUser(authenticationService.getAuthentication().getName());
-        if(user != null){
-            newFile.setUserid(user.getUserId());
+        if(user == null){
+            addError("LOGIN_ERROR", "You must logout and login again!");
+            return 0;
         }
+        newFile.setUserid(user.getUserId());
+        return fileMapper.insert(newFile);
+    }
 
-//        newFile.setUserid(userService.getUser("1").getUserId());
-        addFileToDB(newFile);
-
+    public void storeFile(MultipartFile file) {
+        User user = userService.getUser(authenticationService.getAuthentication().getName());
+        if(user == null){
+            addError("LOGIN_ERROR", "You must logout and login again!");
+            return;
+        }
         try {
             if (file.isEmpty()) {
-                throw new FileException("Failed to store empty file.");
+                addError("FILE_NOT_SELECTED_ERROR","Please choose file!");
+                return;
+//                throw new FileException("Failed to store empty file.");
             }
             Path destinationFile = this.uploadLocation.resolve(
                             Paths.get(file.getOriginalFilename()))
                     .normalize().toAbsolutePath();
             if (!destinationFile.getParent().equals(this.uploadLocation.toAbsolutePath())) {
+                addError("INVALID_UPLOAD_LOCATION_ERROR","Cannot store file outside current directory.");
+                return;
                 // This is a security check
-                throw new FileException(
-                        "Cannot store file outside current directory.");
+//                throw new FileException(
+//                        "Cannot store file outside current directory.");
             }
             try (InputStream inputStream = file.getInputStream()) {
                 Files.copy(inputStream, destinationFile,
@@ -80,8 +109,17 @@ public class FileService {
             }
         }
         catch (IOException e) {
+            addError("UPLOAD_FILE_ERROR","Failed to upload file.");
             throw new FileException("Failed to store file.", e);
         }
+
+//        newFile.setUserid(userService.getUser("1").getUserId());
+        addFileToDB(file);
+
+    }
+
+    public boolean isExistsFile(String fileName){
+        return fileMapper.getFile(fileName) != null;
     }
 
     public Path load(String filename) {
