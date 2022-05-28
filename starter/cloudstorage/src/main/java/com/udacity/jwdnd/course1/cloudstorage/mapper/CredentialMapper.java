@@ -13,14 +13,14 @@ public interface CredentialMapper {
     List<Credential> getAllCredentials();
 
     @Select("SELECT * FROM CREDENTIALS WHERE credentialid = #{credentialid}")
-    File getCredential(Integer credentialid);
+    Credential getCredential(Integer credentialid);
 
     @Insert("INSERT INTO CREDENTIALS (url, username, key, password, userid) " +
             "VALUES(#{url}, #{username}, #{key}, #{password}, #{userid})")
     @Options(useGeneratedKeys = true, keyProperty = "credentialid")
     int insert(Credential credential);
 
-    @Update("UPDATE CREDENTIALS SET url = #{url}, username = #{username}, password = #{password}  " +
+    @Update("UPDATE CREDENTIALS SET url = #{url}, username = #{username}, key = #{key}, password = #{password}  " +
             "WHERE credentialid = #{credentialid}")
     void update(Credential credential);
 
