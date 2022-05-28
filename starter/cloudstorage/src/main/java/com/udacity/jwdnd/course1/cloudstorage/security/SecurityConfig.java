@@ -26,13 +26,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http.authorizeRequests().antMatchers("/signup", "/css/**", "/js/**").permitAll().anyRequest().authenticated();
         http.formLogin().loginPage("/login").permitAll();
-        http.formLogin().defaultSuccessUrl("/",true);
-        http.logout()
-                .logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
-                .logoutSuccessUrl("/login")
-                .invalidateHttpSession(true)        // set invalidation state when logout
-                .deleteCookies("JSESSIONID");
-
-
+        http.formLogin().defaultSuccessUrl("/",true)
+                        .failureUrl("/login?error");
+        http.logout().logoutSuccessUrl("/login?logout").permitAll();
     }
 }

@@ -22,8 +22,8 @@ public class CredentialService {
     public List<Credential> getAllCredentials() {
         List<Credential> allCredentials = credentialMapper.getAllCredentials();
         for (Credential credential: allCredentials) {
-            System.out.println("KKKKKKKKKKKK getAllCredentials: Key = " + credential.getKey());
-            System.out.println("KKKKKKKKKKKK getAllCredentials: Pass = " + credential.getPassword());
+//            System.out.println("KKKKKKKKKKKK getAllCredentials: Key = " + credential.getKey());
+//            System.out.println("KKKKKKKKKKKK getAllCredentials: Pass = " + credential.getPassword());
             credential.setDecryptedPassword(encryptionService.decryptValue(credential.getPassword(), credential.getKey()));
         }
         return allCredentials;
@@ -58,7 +58,7 @@ public class CredentialService {
 //        }
 
         encryptPassword(credential);
-        System.out.println("KKKKKKKKKKKK editCredential: Key = " + credential.getKey());
+//        System.out.println("KKKKKKKKKKKK editCredential: Key = " + credential.getKey());
         credentialMapper.update(credential);
     }
 
