@@ -12,31 +12,24 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.FileSystemUtils;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.Objects;
 
 @Service
 public class FileService {
-    private FileMapper fileMapper;
-
-    private AuthenticationService authenticationService;
-
+    private final FileMapper fileMapper;
     private final Path uploadLocation;
-    private UserService userService;
+    private final UserService userService;
 
-    public FileService(FileMapper fileMapper, AuthenticationService authenticationService, StorageProperties properties, UserService userService) {
+    public FileService(FileMapper fileMapper, StorageProperties properties, UserService userService) {
         this.fileMapper = fileMapper;
-        this.authenticationService = authenticationService;
         this.uploadLocation = Paths.get(properties.getLocation());
         this.userService = userService;
     }
@@ -61,7 +54,7 @@ public class FileService {
     public void storeFileUploadLocation(MultipartFile multipartFile) {
         try {
             Path destinationFile = this.uploadLocation.resolve(
-                            Paths.get(multipartFile.getOriginalFilename()))
+                            Paths.get(Objects.requireNonNull(multipartFile.getOriginalFilename())))
                     .normalize().toAbsolutePath();
             if (!destinationFile.getParent().equals(this.uploadLocation.toAbsolutePath())) {
                 // This is a security check

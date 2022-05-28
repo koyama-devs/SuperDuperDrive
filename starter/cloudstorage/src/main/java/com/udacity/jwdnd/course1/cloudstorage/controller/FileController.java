@@ -8,7 +8,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
@@ -23,13 +22,6 @@ public class FileController {
         this.fileService = fileService;
     }
 
-//    @GetMapping("/files")
-//    public String listFiles(@ModelAttribute("note") Note noteModal, Model model) {
-//        model.addAttribute("activeTab", "Files");
-//        model.addAttribute("files", fileService.getAllFiles());
-//        return "home";
-//    }
-
     @GetMapping("/files/{filename:.+}")
     @ResponseBody
     public ResponseEntity<Resource> serveFile(@PathVariable String filename) {
@@ -40,7 +32,7 @@ public class FileController {
     }
 
     @PostMapping("/upload-file")
-    public String uploadFile(@RequestParam("fileUpload") MultipartFile fileUpload, RedirectAttributes redirectAttributes, Model model, Authentication authentication){
+    public String uploadFile(@RequestParam("fileUpload") MultipartFile fileUpload, RedirectAttributes redirectAttributes, Authentication authentication){
         HomeController.activeTab = "Files";
 
         // Validate upload file

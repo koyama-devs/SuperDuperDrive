@@ -16,12 +16,12 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/")
 public class HomeController {
 
-    private FileService fileService;
-    private NoteService noteService;
-    private CredentialService credentialService;
+    private final FileService fileService;
+    private final NoteService noteService;
+    private final CredentialService credentialService;
 
     public static String activeTab = "Files";
-    private UserService userService;
+    private final UserService userService;
 
     public HomeController(FileService fileService, NoteService noteService, CredentialService credentialService, UserService userService) {
         this.fileService = fileService;

@@ -24,21 +24,23 @@ public class AddEditDeleteCredentialTests extends BaseTests{
         doBeforeTest("username_1");
 
         CredentialsTab credentialsTab = new CredentialsTab(driver);
-        String credentialUrl = "Add New Url";
-        String credentialUsername = "Add New Username";
-        String credentialPassword = "AddNewPassword";
+        String url = "Add New Url";
+        String username = "Add New Username";
+        String password = "AddNewPassword";
         WebDriverWait webDriverWait = new WebDriverWait(driver, 2);
 
         // Get row count of credential table before add new
         By tableRow = By.xpath("//*[@id=\"credentialTable\"]/tbody/tr");
         int rowCountBeforeAdd = driver.findElements(tableRow).size();
 
-        credentialsTab.addNewCredential(credentialUrl, credentialUsername, credentialPassword);
+        credentialsTab.addNewCredential(url, username, password);
 
         // Check that the newly created credential is displayed on the credential table
         webDriverWait.until(ExpectedConditions.numberOfElementsToBe(tableRow, rowCountBeforeAdd + 1));
-        Assertions.assertTrue(driver.findElement(By.xpath("//*[@id=\"credentialTable\"]/tbody/tr["+ (rowCountBeforeAdd + 1) +"]/th[1]")).getText().equals(credentialUrl));
-        Assertions.assertTrue(driver.findElement(By.xpath("//*[@id=\"credentialTable\"]/tbody/tr["+ (rowCountBeforeAdd + 1) +"]/td[2]")).getText().equals(credentialUsername));
+        WebElement newUrl = driver.findElement(By.xpath("//*[@id=\"credentialTable\"]/tbody/tr["+ (rowCountBeforeAdd + 1) +"]/th[1]"));
+        WebElement newUsername = driver.findElement(By.xpath("//*[@id=\"credentialTable\"]/tbody/tr["+ (rowCountBeforeAdd + 1) +"]/td[2]"));
+        Assertions.assertEquals(newUrl.getText(), url);
+        Assertions.assertEquals(newUsername.getText(), username);
     }
 
     @Test
@@ -46,20 +48,20 @@ public class AddEditDeleteCredentialTests extends BaseTests{
         doBeforeTest("username_2");
 
         CredentialsTab credentialsTab = new CredentialsTab(driver);
-        String credentialUrl = "Edit Url";
-        String credentialUsername = "Edit Username";
-        String credentialPassword = "EditPassword";
+        String url = "Edit Url";
+        String username = "Edit Username";
+        String password = "EditPassword";
 
         credentialsTab.addNewCredential("Add New Url 1", "Add New Username 1", "AddNewPassword1");
         credentialsTab.addNewCredential("Add New Url 2", "Add New Username 2", "AddNewPassword2");
 
-        credentialsTab.editFirstCredential(credentialUrl, credentialUsername, credentialPassword);
+        credentialsTab.editFirstCredential(url, username, password);
 
         // Check edited data
-        By firstCredentialUrl = By.xpath("//*[@id=\"credentialTable\"]/tbody/tr[1]/th[1]");
-        By firstCredentialTUsername = By.xpath("//*[@id=\"credentialTable\"]/tbody/tr[1]/td[2]");
-        Assertions.assertTrue(driver.findElement(firstCredentialUrl).getText().equals(credentialUrl));
-        Assertions.assertTrue(driver.findElement(firstCredentialTUsername).getText().equals(credentialUsername));
+        By firstUrl = By.xpath("//*[@id=\"credentialTable\"]/tbody/tr[1]/th[1]");
+        By firstUsername = By.xpath("//*[@id=\"credentialTable\"]/tbody/tr[1]/td[2]");
+        Assertions.assertEquals(driver.findElement(firstUrl).getText(), url);
+        Assertions.assertEquals(driver.findElement(firstUsername).getText(), username);
     }
 
     @Test
@@ -81,8 +83,8 @@ public class AddEditDeleteCredentialTests extends BaseTests{
         String credentialIdOfFirstDeleteLink = credentialsTab.getCredentialIdOfDeleteLink(firstDeleteLink);
 
         // Check table row count
-        Assertions.assertTrue(rowCountAfter == rowCountBefore - 1);
+        Assertions.assertEquals(rowCountAfter, rowCountBefore - 1);
         // Check deleted CredentialId is not existing
-        Assertions.assertFalse(credentialIdOfFirstDeleteLink.equals(deletedCredentialId));
+        Assertions.assertNotEquals(credentialIdOfFirstDeleteLink, deletedCredentialId);
     }
 }

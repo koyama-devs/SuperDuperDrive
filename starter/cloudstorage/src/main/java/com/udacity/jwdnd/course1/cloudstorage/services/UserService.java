@@ -9,8 +9,8 @@ import java.util.Base64;
 
 @Service
 public class UserService {
-    private UserMapper userMapper;
-    private HashService hashService;
+    private final UserMapper userMapper;
+    private final HashService hashService;
 
     public UserService(UserMapper userMapper, HashService hashService) {
         this.userMapper = userMapper;
