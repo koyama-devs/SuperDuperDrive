@@ -155,4 +155,8 @@ public class FileService {
             throw new FileException("Could not initialize storage", e);
         }
     }
+
+    public void deleteFile(String fileName) {
+        fileMapper.delete(fileName);
+    }
 }
