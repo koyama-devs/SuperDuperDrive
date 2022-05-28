@@ -26,8 +26,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http.authorizeRequests().antMatchers("/signup", "/css/**", "/js/**").permitAll().anyRequest().authenticated();
         http.formLogin().loginPage("/login").permitAll();
-        http.formLogin().defaultSuccessUrl("/",true)
-                        .failureUrl("/login?error");
+        http.formLogin().defaultSuccessUrl("/",true);
         http.logout().logoutSuccessUrl("/login?logout").permitAll();
     }
 }
