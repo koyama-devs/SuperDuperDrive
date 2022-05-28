@@ -1,7 +1,7 @@
 package com.udacity.jwdnd.course1.cloudstorage.controller;
 
-import com.udacity.jwdnd.course1.cloudstorage.storage.StorageFileNotFoundException;
-import com.udacity.jwdnd.course1.cloudstorage.storage.StorageService;
+import com.udacity.jwdnd.course1.cloudstorage.services.FileService;
+import com.udacity.jwdnd.course1.cloudstorage.storage.FileNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
@@ -10,28 +10,21 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder;
-
-import java.io.IOException;
-import java.util.stream.Collectors;
 
 @Controller
+@RequestMapping("/")
 public class UploadFileController {
-    private final StorageService storageService;
+
+    private final FileService fileService;
 
     @Autowired
-    public UploadFileController(StorageService storageService) {
-        this.storageService = storageService;
+    public UploadFileController(FileService fileService) {
+        this.fileService = fileService;
     }
 
     @GetMapping("/")
-    public String listUploadedFiles(Model model) throws IOException {
-
-        model.addAttribute("files", storageService.loadAll().map(
-                        path -> MvcUriComponentsBuilder.fromMethodName(UploadFileController.class,
-                                "serveFile", path.getFileName().toString()).build().toUri().toString())
-                .collect(Collectors.toList()));
-
+    public String listUploadedFiles(Model model) {
+        model.addAttribute("files", fileService.getAllFiles());
         return "home";
     }
 
@@ -39,19 +32,19 @@ public class UploadFileController {
     @ResponseBody
     public ResponseEntity<Resource> serveFile(@PathVariable String filename) {
 
-        Resource file = storageService.loadAsResource(filename);
+        Resource file = fileService.loadAsResource(filename);
         return ResponseEntity.ok().header(HttpHeaders.CONTENT_DISPOSITION,
                 "attachment; filename=\"" + file.getFilename() + "\"").body(file);
     }
 
     @PostMapping("/")
-    public String storeFileUpload(@RequestParam("fileUpload") MultipartFile fileUpload, Model model){
-        storageService.store(fileUpload);
+    public String storeFileUpload(@RequestParam("fileUpload") MultipartFile fileUpload){
+        fileService.storeFile(fileUpload);
         return "redirect:/";
     }
 
-    @ExceptionHandler(StorageFileNotFoundException.class)
-    public ResponseEntity<?> handleStorageFileNotFound(StorageFileNotFoundException exc) {
+    @ExceptionHandler(FileNotFoundException.class)
+    public ResponseEntity<?> handleStorageFileNotFound() {
         return ResponseEntity.notFound().build();
     }
 }
